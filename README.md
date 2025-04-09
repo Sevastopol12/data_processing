@@ -44,7 +44,20 @@ Về mặt căn bản, ta có những phương thức này để biểu diễn v
 
 * Note: Khi đưa một câu vào model, model sẽ lần lượt lấy từng từ xuất hiện trong câu input để extract embedding vector, các vector này sau cùng sẽ được trả về theo dạng matrix (m,n) với m là số lượng từ trong câu và n là chiều không gian của vector embedding, 300 hoặc 768 tùy loại model. Việc lấy mean, ép các token embedding thành sentence embedding, của toàn bộ token được xem như tổng hợp ý nghĩa của toàn bộ câu, có thể giải thích là do những câu nói về cùng một chủ đề sẽ có xu hướng sử dụng những từ ngữ, hay cách diễn đạt giống nhau, hence trọng số từ tf-idf và các vector embedding sẽ có tương tự nhau do đó khi lấy mean, các câu về cùng chủ đề sẽ có xu hướng clustered hoặc nằm về cùng phía trong vector space. Tham khảo (2). Anyways, xét về thuật toán và các assumption của các ML model, việc này sẽ giúp cho các model tổng quát dữ liệu tốt hơn, hence better performance.
 
+Sơ kết lại, e có hướng đi là sử dụng các vector embedding từ pretrained model, có thể là contextualized hoặc static, sau đó weight chúng bằng TF-IDF vector.
 
+Thì... hướng đi này dẫn ta đến một số vấn đề:
+  Thứ nhất, xét các assumption của Machine Learning classifier, để một classifier hoạt động tốt, ta cần đáp ứng được assumption của classifier đó về dữ liệu. Aaaand, với mỗi classifier sẽ có assumption       khác nhau :>: Tham khảo (3)
+    1. Tính phân tách, các dữ liệu được phân bố trong không gian sao cho chúng luôn có một ranh giới phân chia rõ ràng giữa các class ( SVM )
+    2. Tính phân vùng trong không gian, tương tự như tính phân tách của SVM nhưng ở trên quy nhỏ hơn (một feature) ( Tree-base classifier )
+    3. Tính độc lập của predictors/independent variables ( các model sử dụng thuật dự đoán xác suất, LogisticRegression, Naive Bayes)
+    4. Tính linear, log odds của biến phụ thuộc có thể được biểu diễn dưới dạng linear combination của các biến độc lập ( LogisticRegression )
+    5. Tính phân cụm, dữ liệu trong cùng một class tập trung thành cụm ( KNN )
+    
+  Thì, trước hết đối với việc sử dụng static vector: Do tính chất gán cùng một vector cho những từ giống nhau và các từ có ngữ nghĩa tương đồng sẽ có vector nằm gần nhau, điều này khiến cho những vector     có thành phần tương tự nhàu sẽ tạo thành một trọng số lớn hơn so với các vector khác. Kết quả là việc này sẽ khiến cho những câu có cùng từ ngữ hoặc sử dụng từ ngữ tương đồng, sẽ có xu hượng tập trung     lại thành cụm trong không gian, hoặc ít nhất, chúng sẽ được dồn về cùng một phía. Xét về bài toán dự đoán dự trên triệu chứng được mô tả, điều này có vẻ đúng, bởi theo lý thuyết, những khoa điều trị tuy   sẽ có nhiều bệnh khác nhau, nhưng phần lớn, chúng đều có sự tương đồng nhất định. Giả sử về khoa Cơ xương khớp, các triệu chứng của các bệnh liên quan tới khoa này sẽ có xu hướng liên quan các bộ phận     cơ thể, đặc biệt là cơ, xương, khớp. VD: đau nhức bắp tay, đau cột sống, khớp cổ tay bị đau khi cử động, mỏi vai, hoặc các bệnh thần kinh sẽ có xu hướng liên quan đến phần đầu,...
+  => Với cách hiểu này, có vẻ việc dùng static vector sẽ trước mắt thỏa mãn được điều kiện của KNN và SVM. Còn đối với tree-base method có vẻ sẽ không được phù hợp, do tính chất của
+  
+  
 (1)  
 + https://www.youtube.com/watch?v=wjZofJX0v4M&t=747s đoạn nói về word embeddings
 
@@ -53,3 +66,4 @@ Về mặt căn bản, ta có những phương thức này để biểu diễn v
   
 + https://blog.ml6.eu/the-art-of-pooling-embeddings-c56575114cf8
 
+(3)
