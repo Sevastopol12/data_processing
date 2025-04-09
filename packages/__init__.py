@@ -34,7 +34,7 @@ headers = {
 }
 
 driver = webdriver.Chrome(service=Service(r"M:\\ChromeDriver\\chromedriver-win64\\chromedriver.exe"))
-clientAI = genai.Client(api_key=r"AIzaSyDlq9dQMa74-LGoh3uwuOaCCQjF_nFmM2I")
+
 
 def AIGenerate(content):
     response = clientAI.models.generate_content(model="gemini-2.0-flash", contents=content)
